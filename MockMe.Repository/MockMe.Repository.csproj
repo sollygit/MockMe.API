@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MockMe.Common\MockMe.Common.csproj" />
+    <ProjectReference Include="..\MockMe.Model\MockMe.Model.csproj" />
+  </ItemGroup>
+
+</Project>
