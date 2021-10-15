@@ -1,6 +1,6 @@
 [![Build and deploy .NET Core app to Windows WebApp MockMe-Api](https://github.com/sollygit/MockMe.Api/actions/workflows/MockMe-Api.yml/badge.svg)](https://github.com/sollygit/MockMe.Api/actions/workflows/MockMe-Api.yml)
 
-# JWT Auth Demo (Angular + ASP.NET Core)
+# JWT Auth Demo (ASP.NET Core + Angular)
 
 This repository demos an Angular SPA and an ASP.NET Core web API application using JWT auth, and an integration testing project for a set of actions including login, logout, refresh token, impersonation, authentication, and authorization.
 
