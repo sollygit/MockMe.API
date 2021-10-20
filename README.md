@@ -1,4 +1,4 @@
-[![Build and deploy .NET Core app to Windows WebApp MockMe-Api](https://github.com/sollygit/MockMe.Api/actions/workflows/MockMe-Api.yml/badge.svg)](https://github.com/sollygit/MockMe.Api/actions/workflows/MockMe-Api.yml)
+[![Build and deploy .NET Core app to Windows WebApp MockMe-API](https://github.com/sollygit/MockMe.Api/actions/workflows/MockMe-Api.yml/badge.svg)](https://github.com/sollygit/MockMe.Api/actions/workflows/MockMe-Api.yml)
 
 # JWT Auth Demo (ASP.NET Core + Angular)
 
