@@ -17,13 +17,13 @@
       }
     },
     "MockMe.Api": {
+      "applicationUrl": "https://localhost:44389",
       "commandName": "Project",
-      "launchBrowser": true,
+      "dotnetRunMessages": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "dotnetRunMessages": "true",
-      "applicationUrl": "https://localhost:44389"
+      "launchBrowser": true
     }
   }
 }
