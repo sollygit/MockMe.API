@@ -46,7 +46,7 @@ namespace MockMe.API.Controllers
             if (form.StudentFile?.Length == 0) return BadRequest("The file is empty.");
             if (Path.GetExtension(form.StudentFile.FileName) != ".pdf") return BadRequest($"The file is not a PDF file.");
 
-            var filename = $"{DateTime.Now:yyyyMMdd-HHmm}.pdf";
+            var filename = $"{DateTime.Now:yyyyMMdd-HHmm}-{form.StudentFile.FileName}";
             var filePath = Path.Combine(@"App_Data", filename);
             new FileInfo(filePath).Directory?.Create();
 
