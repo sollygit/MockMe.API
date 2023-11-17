@@ -4,6 +4,8 @@
 
 This repository demos an Angular SPA and an ASP.NET Core web API application using JWT auth, and an integration testing project for a set of actions including login, logout, refresh token, impersonation, authentication, and authorization.
 
+https://github.com/dotnet-labs/JwtAuthDemo
+
 ## Medium Articles
 
 1. [JWT Auth in ASP.NET Core](https://codeburst.io/jwt-auth-in-asp-net-core-148fb72bed03)
