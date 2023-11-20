@@ -13,7 +13,7 @@ namespace MockMe.API.Services
 {
     public interface IMockService
     {
-        Task<Product> ProductAdd(MockRequest request);
+        Task<Product> ProductAdd(ProductRequest request);
         Task<IEnumerable<Country>> GetCountriesAsync();
         Task<IEnumerable<Product>> GetProductsAsync(int count);
         Task<string> RunExeAsync(string filename);
@@ -28,12 +28,14 @@ namespace MockMe.API.Services
             public MockService(ILogger<MockService> logger, IMemoryCache cache, IConfiguration configuration) =>
                 (_logger, _cache, _configuration) = (logger, cache, configuration);
 
-            public async Task<Product> ProductAdd(MockRequest request)
+            public async Task<Product> ProductAdd(ProductRequest request)
             {
                 var data = new Product();
 
                 try
                 {
+                    _logger.LogInformation("ProductRequest: {request}", request.ToJson(true));
+
                     data = MockUtil.GetData(request);
                 }
                 catch (Exception ex)
