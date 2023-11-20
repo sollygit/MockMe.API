@@ -13,7 +13,7 @@ namespace MockMe.API.Services
 {
     public interface IMockService
     {
-        Task<MockResponse> GetDataAsync(Guid submissionId);
+        Task<Product> ProductAdd(MockRequest request);
         Task<IEnumerable<Country>> GetCountriesAsync();
         Task<IEnumerable<Product>> GetProductsAsync(int count);
         Task<string> RunExeAsync(string filename);
@@ -28,17 +28,17 @@ namespace MockMe.API.Services
             public MockService(ILogger<MockService> logger, IMemoryCache cache, IConfiguration configuration) =>
                 (_logger, _cache, _configuration) = (logger, cache, configuration);
 
-            public async Task<MockResponse> GetDataAsync(Guid submissionId)
+            public async Task<Product> ProductAdd(MockRequest request)
             {
-                var data = new MockResponse();
+                var data = new Product();
 
                 try
                 {
-                    data = MockUtil.GetData(submissionId);
+                    data = MockUtil.GetData(request);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("MockService GetData Error", ex);
+                    _logger.LogError("ProductAdd Error", ex);
                 }
 
                 return await Task.FromResult(data);

@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MockMe.API.Services;
 using MockMe.Model;
+using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 
 namespace MockMe.API.Controllers
@@ -31,15 +33,12 @@ namespace MockMe.API.Controllers
             return new OkObjectResult(items);
         }
 
-        [HttpPost("Submission")]
-        public async Task<IActionResult> Submission([FromBody] MockRequest request)
+        [HttpPost("[action]")]
+        public async Task<IActionResult> Product([FromBody] MockRequest request)
         {
-            if (request == null)
-            {
-                return BadRequest(ModelState);
-            }
+            if (request == null) return BadRequest("Invalid request");
 
-            var data = await _mockService.GetDataAsync(request.SubmissionId);
+            var data = await _mockService.ProductAdd(request);
             return new OkObjectResult(data);
         }
 
