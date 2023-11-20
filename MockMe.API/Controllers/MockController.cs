@@ -34,9 +34,9 @@ namespace MockMe.API.Controllers
         }
 
         [HttpPost("[action]")]
-        public async Task<IActionResult> Product([FromBody] MockRequest request)
+        public async Task<IActionResult> Product([FromBody] ProductRequest request)
         {
-            if (request == null) return BadRequest("Invalid request");
+            if (request == null) return BadRequest(ModelState);
 
             var data = await _mockService.ProductAdd(request);
             return new OkObjectResult(data);

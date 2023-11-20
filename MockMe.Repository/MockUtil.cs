@@ -59,11 +59,11 @@ namespace MockMe.Common
             return countries;
         }
 
-        public static Product GetData(MockRequest request)
+        public static Product GetData(ProductRequest request)
         {
             var data = new Faker<Product>()
                 .RuleFor(o => o.Id, request.Id.GetHashCode())
-                .RuleFor(o => o.Name, f => request.ReferenceNumber)
+                .RuleFor(o => o.Name, f => request.ParticipantId.ToString())
                 .RuleFor(o => o.Description, f => f.Random.Words(5))
                 .RuleFor(o => o.Price, f => decimal.Parse(f.Random.Decimal(1000).ToString("0.00")))
                 .RuleFor(o => o.ImageUrl, f => f.Image.PicsumUrl())
