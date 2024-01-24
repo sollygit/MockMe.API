@@ -40,7 +40,7 @@ namespace MockMe.API.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("ProductAdd Error", ex);
+                    _logger.LogError("ProductAdd Error {ex}", ex);
                 }
 
                 return await Task.FromResult(data);
@@ -63,7 +63,7 @@ namespace MockMe.API.Services
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError("GetCountriesAsync Error", ex);
+                        _logger.LogError("GetCountriesAsync Error {ex}", ex);
                     }
 
                     return Enumerable.Empty<Country>();
@@ -80,7 +80,7 @@ namespace MockMe.API.Services
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError("GetProductsAsync Error", ex);
+                    _logger.LogError("GetProductsAsync Error {ex}", ex);
                 }
 
                 return await Task.FromResult(products);
