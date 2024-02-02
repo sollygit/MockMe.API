@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MockMe.API.Services;
 using MockMe.Model;
 using System;
-using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace MockMe.API.Controllers
@@ -47,6 +47,32 @@ namespace MockMe.API.Controllers
         {
             var result = await _mockService.RunExeAsync(filename);
             return Ok(result);
+        }
+
+        [HttpPost("encode")]
+        public IActionResult Encode([FromBody] PlainText plainText)
+        {
+            try
+            {
+                return Ok(Convert.ToBase64String(Encoding.UTF8.GetBytes(plainText.Text)));
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult($"Encode error: {ex.Message}");
+            }
+        }
+
+        [HttpPost("decode")]
+        public IActionResult Decode([FromBody] PlainText plainText)
+        {
+            try
+            {
+                return Ok(Encoding.UTF8.GetString(Convert.FromBase64String(plainText.Text)));
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult($"Decode error: {ex.Message}");
+            }
         }
     }
 }

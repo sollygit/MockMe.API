@@ -1,9 +1,9 @@
 ﻿namespace MockMe.Model
 {
-    public class SubmissionResult
+    public class TemplateFormResult
     {
-        public int StudentId { get; set; }
-        public int? FormId { get; set; }
+        public int FileId { get; set; }
+        public int? TemplateId { get; set; }
         public string FileName { get; set; }
         public long FileSize { get; set; }
     }
