@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace MockMe.UnitTest
 {
     [TestClass]
-    public class StudentControllerTest
+    public class FileControllerTest
     {
         private static WebApplicationFactory<Startup> _factory;
 
@@ -24,7 +24,7 @@ namespace MockMe.UnitTest
         }
 
         [TestMethod]
-        public async Task ShouldReturnSuccessResponse_SingleFileForm()
+        public async Task Should_ReturnSuccessResponse_SingleFileUpload()
         {
             var client = _factory.CreateClient();
 
@@ -34,23 +34,23 @@ namespace MockMe.UnitTest
             using var form = new MultipartFormDataContent();
             using var fileContent = new ByteArrayContent(await File.ReadAllBytesAsync(filePath));
             fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-            form.Add(fileContent, "StudentFile", Path.GetFileName(filePath));
-            form.Add(new StringContent("789"), "FormId");
-            form.Add(new StringContent("Reading"), "Courses");
-            form.Add(new StringContent("Math"), "Courses");
+            form.Add(new StringContent("101"), "templateId");
+            form.Add(fileContent, "templateFile", Path.GetFileName(filePath));
+            form.Add(new StringContent("reading"), "Courses");
+            form.Add(new StringContent("math"), "Courses");
 
-            var response = await client.PostAsync("api/student/123/form", form);
+            var response = await client.PostAsync("api/file/9998/upload", form);
             var json = await response.Content.ReadAsStringAsync();
 
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-            Assert.AreEqual("/api/student/123/form/789", response.Headers.Location?.AbsolutePath.ToLower());
+            Assert.AreEqual("/api/file/9998/101", response.Headers.Location?.AbsolutePath.ToLower());
             Assert.IsNotNull(json);
             Assert.IsTrue(response.StatusCode == HttpStatusCode.Created);
         }
 
         [TestMethod]
-        public async Task ShouldReturnBadRequestIfFileFormatIsNotPdf_SingleFileForm()
+        public async Task Should_Return_BadRequest_SingleFileUpload()
         {
             var client = _factory.CreateClient();
 
@@ -60,22 +60,22 @@ namespace MockMe.UnitTest
             using var form = new MultipartFormDataContent();
             using var fileContent = new ByteArrayContent(await File.ReadAllBytesAsync(filePath));
             fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse("multipart/form-data");
-            form.Add(fileContent, "StudentFile", Path.GetFileName(filePath));
-            form.Add(new StringContent("789"), "FormId");
+            form.Add(fileContent, "templateFile", Path.GetFileName(filePath));
+            form.Add(new StringContent("101"), "templateId");
             form.Add(new StringContent("Reading"), "Courses");
             form.Add(new StringContent("Math"), "Courses");
 
-            var response = await client.PostAsync("api/student/123/form", form);
+            var response = await client.PostAsync("api/file/9998/upload", form);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
             Assert.IsNull(response.Headers.Location?.AbsolutePath);
             var json = await response.Content.ReadAsStringAsync();
-            Assert.AreEqual("\"The file is not a PDF file.\"", json);
+            Assert.AreEqual("\"The file is not supported.\"", json);
         }
 
         [TestMethod]
-        public async Task ShouldReturnSuccessResponse_MultipleFiles()
+        public async Task Should_Return_SuccessResponse_MultiFileUpload()
         {
             var client = _factory.CreateClient();
 
@@ -94,7 +94,7 @@ namespace MockMe.UnitTest
             form.Add(fileContent2, "Files", Path.GetFileName(testFile2));
             form.Add(fileContent3, "Files", Path.GetFileName(testFile3));
 
-            var response = await client.PostAsync("api/student/123/forms", form);
+            var response = await client.PostAsync("api/file/9998/uploads", form);
             var json = await response.Content.ReadAsStringAsync();
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
@@ -104,15 +104,15 @@ namespace MockMe.UnitTest
         }
 
         [TestMethod]
-        public async Task ShouldDownloadFile()
+        public async Task Should_Download_SingleFile()
         {
             var client = _factory.CreateClient();
-            var response = await client.GetAsync("api/student/files/example-file");
+            var response = await client.GetAsync("api/file/contoso.pdf");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/pdf", response.Content.Headers.ContentType?.ToString());
-            Assert.AreEqual("attachment; filename=example-file.pdf; filename*=UTF-8''example-file.pdf", response.Content.Headers.ContentDisposition?.ToString());
-            Assert.AreEqual("134106", response.Content.Headers.ContentLength?.ToString());
+            Assert.AreEqual("attachment; filename=contoso.pdf; filename*=UTF-8''contoso.pdf", response.Content.Headers.ContentDisposition?.ToString());
+            Assert.AreEqual(134106, response.Content.Headers.ContentLength);
         }
 
         [ClassCleanup]

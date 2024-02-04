@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="sign.bat $(TargetDir) $(TargetName)" />
+    <Exec Command="::sign.bat $(TargetDir) $(TargetName)" />
   </Target>
   
 </Project>
