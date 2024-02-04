@@ -41,7 +41,7 @@ namespace MockMe.UnitTest
             var actual = await mockService.Object.GetAllAsync();
 
             // Assert
-            Assert.AreEqual(trades.Count(), actual.Count());
+            Equals(trades.Count(), actual.Count());
         }
 
         [Test]
@@ -63,7 +63,7 @@ namespace MockMe.UnitTest
             var actual = await mockService.Object.GetAsync(Guid.Parse(trade.Id));
 
             // Assert
-            Assert.AreEqual(trade, actual);
+            Equals(trade, actual);
         }
 
         [Test]
@@ -84,7 +84,7 @@ namespace MockMe.UnitTest
 
             // Assert
             mockService.Verify(m => m.GetAsync(tradeId), Times.AtLeastOnce());
-            Assert.AreEqual(null, actual);
+            Equals(null, actual);
         }
 
         [Test]
@@ -105,7 +105,7 @@ namespace MockMe.UnitTest
             var actual = await mockService.Object.SaveAsync(entity);
 
             // Assert
-            Assert.AreEqual(trade, actual);
+            Equals(trade, actual);
         }
 
         [Test]
@@ -166,7 +166,7 @@ namespace MockMe.UnitTest
             // Assert
             mockService.Verify(m => m.DeleteAsync(Guid.Parse(trade.Id)));
             mockService.Verify(m => m.GetAsync(Guid.Parse(trade.Id)));
-            Assert.AreEqual(null, actual);
+            Equals(null, actual);
         }
 
         private static async Task SaveAsync_ThrowException(AssetTrade trade, string errorMessage)

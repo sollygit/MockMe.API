@@ -25,7 +25,7 @@ namespace MockMe.JwtAuth.UnitTest
         public void ShouldLoadCorrectJwtConfig()
         {
             var jwtConfig = _serviceProvider.GetRequiredService<JwtTokenConfig>();
-            Assert.AreEqual("1234567890123456789", jwtConfig.Secret);
+            Assert.AreEqual("1234567890123456789012345678901234567890", jwtConfig.Secret);
             Assert.AreEqual(20, jwtConfig.AccessTokenExpiration);
             Assert.AreEqual(60, jwtConfig.RefreshTokenExpiration);
         }

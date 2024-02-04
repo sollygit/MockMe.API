@@ -65,11 +65,10 @@ namespace MockMe.JwtAuth.UnitTest
         [TestMethod]
         public async Task ShouldReturn401ForInvalidToken()
         {
-            const string invalidTokenString =
-                @"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYW8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTU5NDg1NzYxNSwiaXNzIjoiaHR0cHM6Ly9teXdlYmFwaS5jb20iLCJhdWQiOiJNeSBXZWJBcGkgVXNlcnMifQ.kjO-4siQxx3JVPVtV_jbmSP5fLp-SIJL92Zq3-weCIg";
+            const string invalidTokenString = @"eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcwNzAzMTE5MiwiaXNzIjoiaHR0cHM6Ly9teXdlYmFwaS5jb20iLCJhdWQiOiJodHRwczovL215d2ViYXBpLmNvbSJ9.sx_togy1FnalWpAnxN6vKKGeuG37DkwMoJCpoZbZ3T";
 
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
-            Assert.ThrowsException<SecurityTokenInvalidSignatureException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
+            Assert.ThrowsException<SecurityTokenSignatureKeyNotFoundException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, invalidTokenString);
             var response = await _httpClient.GetAsync("api/mock/product");

@@ -34,8 +34,7 @@ namespace MockMe.API.Controllers
 
             var ext = Path.GetExtension(form.TemplateFile.FileName);
             if (form.TemplateFile?.Length == 0) return BadRequest("The file is empty.");
-            if (ext != ".docx" && ext != ".json" && ext != ".xml") return BadRequest($"The file is not supported.");
-
+            
             using var memoryStream = new MemoryStream();
             await form.TemplateFile.CopyToAsync(memoryStream);
             var bytes = memoryStream.ToArray();
