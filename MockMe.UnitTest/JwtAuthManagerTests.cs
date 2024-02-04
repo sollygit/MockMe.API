@@ -7,7 +7,7 @@ using MockMe.API.Services;
 using System;
 using System.Security.Claims;
 
-namespace MockMe.JwtAuth.UnitTest
+namespace MockMe.UnitTest
 {
     [TestClass]
     public class JwtAuthManagerTests

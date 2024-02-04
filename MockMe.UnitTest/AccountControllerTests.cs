@@ -16,7 +16,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace MockMe.JwtAuth.UnitTest
+namespace MockMe.UnitTest
 {
     [TestClass]
     public class AccountControllerTests

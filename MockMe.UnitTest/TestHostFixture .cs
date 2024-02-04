@@ -5,7 +5,7 @@ using MockMe.API;
 using System;
 using System.Net.Http;
 
-namespace MockMe.JwtAuth.UnitTest
+namespace MockMe.UnitTest
 {
     public class TestHostFixture : IDisposable
     {
