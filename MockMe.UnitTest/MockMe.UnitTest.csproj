@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -24,4 +24,8 @@
     <ProjectReference Include="..\MockMe.Api\MockMe.API.csproj" />
   </ItemGroup>
 
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Exec Command="::sign.bat $(TargetDir) $(TargetName)" />
+	</Target>
+	
 </Project>

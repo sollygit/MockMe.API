@@ -1,0 +1,32 @@
+[
+  {
+    "technologyId": 1,
+    "technologyName": "Angular",
+    "technologyType": 1
+  },
+  {
+    "technologyId": 6,
+    "technologyName": "Azure",
+    "technologyType": 2
+  },
+  {
+    "technologyId": 5,
+    "technologyName": "Blazor",
+    "technologyType": 4
+  },
+  {
+    "technologyId": 4,
+    "technologyName": "C#",
+    "technologyType": 8
+  },
+  {
+    "technologyId": 3,
+    "technologyName": "MVC",
+    "technologyType": 16
+  },
+  {
+    "technologyId": 2,
+    "technologyName": "SQL",
+    "technologyType": 19
+  }
+]

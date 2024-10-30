@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MockMe.API.Services;
+using MockMe.Common;
 using MockMe.Model;
 using System;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -49,7 +52,7 @@ namespace MockMe.API.Controllers
             return Ok(result);
         }
 
-        [HttpPost("encode")]
+        [HttpPost("Encode")]
         public IActionResult Encode([FromBody] PlainText plainText)
         {
             try
@@ -62,7 +65,7 @@ namespace MockMe.API.Controllers
             }
         }
 
-        [HttpPost("decode")]
+        [HttpPost("Decode")]
         public IActionResult Decode([FromBody] PlainText plainText)
         {
             try
@@ -73,6 +76,24 @@ namespace MockMe.API.Controllers
             {
                 return new ObjectResult($"Decode error: {ex.Message}");
             }
+        }
+
+        [HttpGet(nameof(Reports))]
+        public async Task<IActionResult> Reports()
+        {
+            var path = @$"{Directory.GetCurrentDirectory()}\Shared\reports.json";
+            var json = await System.IO.File.ReadAllTextAsync(path);
+            var items = Deserializer.FromJsonDictionary<Report>(json).OrderBy(o => o.Key);
+            return new OkObjectResult(items);
+        }
+
+        [HttpGet(nameof(Technologies))]
+        public async Task<IActionResult> Technologies()
+        {
+            var path = @$"{Directory.GetCurrentDirectory()}\Shared\technologies.json";
+            var json = await System.IO.File.ReadAllTextAsync(path);
+            var items = Deserializer.FromJsonList<Technology>(json).OrderBy(o => o.TechnologyId);
+            return new OkObjectResult(items);
         }
     }
 }
