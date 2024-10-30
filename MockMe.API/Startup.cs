@@ -11,7 +11,6 @@ using MockMe.API.Services;
 using MockMe.Repository;
 using System;
 using System.Text;
-using static MockMe.API.Services.IMockService;
 
 namespace MockMe.API
 {
