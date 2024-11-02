@@ -24,8 +24,4 @@
     <ProjectReference Include="..\MockMe.Api\MockMe.API.csproj" />
   </ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-		<Exec Command="::sign.bat $(TargetDir) $(TargetName)" />
-	</Target>
-	
 </Project>
