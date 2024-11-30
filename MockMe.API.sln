@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockMe.Repository", "MockMe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockMe.UnitTest", "MockMe.UnitTest\MockMe.UnitTest.csproj", "{3B31A30F-A6F7-420E-A41A-2379C3A8B0E0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockMe.API", "MockMe.Api\MockMe.API.csproj", "{8B7DC453-8805-4D30-8A40-004576B60934}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MockMe.API", "MockMe.API\MockMe.API.csproj", "{8B7DC453-8805-4D30-8A40-004576B60934}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
