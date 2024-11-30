@@ -15,4 +15,8 @@
     <ProjectReference Include="..\MockMe.Repository\MockMe.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Properties\ServiceDependencies\" />
+  </ItemGroup>
+
 </Project>
