@@ -5,7 +5,6 @@ using MockMe.Common;
 using MockMe.Model;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,7 +15,6 @@ namespace MockMe.API.Services
         Task<Product> ProductAdd(ProductRequest request);
         Task<IEnumerable<Country>> GetCountriesAsync();
         Task<IEnumerable<Product>> GetProductsAsync(int count);
-        Task<string> RunExeAsync(string filename);
     }
 
     public class MockService : IMockService
@@ -84,35 +82,6 @@ namespace MockMe.API.Services
             }
 
             return await Task.FromResult(products);
-        }
-
-        public async Task<string> RunExeAsync(string filename)
-        {
-            using var process = new Process
-            {
-                StartInfo = {
-                    FileName = _configuration["ExecFileName"], // MockMe.CMD.exe
-                    Arguments = $"{filename}",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true }
-            };
-            // Print the current working directory information
-            // process.StartInfo.FileName = @"cmd.exe";
-            // process.StartInfo.Arguments = @"/c dir";
-
-            process.OutputDataReceived += (_, data) => Console.WriteLine(data.Data);
-            process.ErrorDataReceived += (_, data) => Console.WriteLine(data.Data);
-
-            Console.WriteLine("Start Process");
-            process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-            var exited = process.WaitForExit(1000 * 5); // (Optional) wait up to 5 seconds
-            Console.WriteLine($"Exit {exited}");
-
-            return await Task.FromResult($"{filename} success");
         }
     }
 }

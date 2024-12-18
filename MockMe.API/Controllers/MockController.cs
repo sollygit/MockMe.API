@@ -45,13 +45,6 @@ namespace MockMe.API.Controllers
             return new OkObjectResult(data);
         }
 
-        [HttpGet("RunExe/{filename}")]
-        public async Task<IActionResult> RunExe(string filename)
-        {
-            var result = await _mockService.RunExeAsync(filename);
-            return Ok(result);
-        }
-
         [HttpPost("Encode")]
         public IActionResult Encode([FromBody] PlainText plainText)
         {
