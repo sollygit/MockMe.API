@@ -13,7 +13,6 @@ namespace MockMe.API.Controllers
 {
     [ApiController]
     [ApiExplorerSettings(GroupName = "v1")]
-    [Authorize]
     [Route("api/[controller]")]
     public class MockController : ControllerBase
     {
@@ -29,13 +28,7 @@ namespace MockMe.API.Controllers
             return new OkObjectResult(items);
         }
 
-        [HttpGet("Country")]
-        public async Task<IActionResult> Countries()
-        {
-            var items = await _mockService.GetCountriesAsync();
-            return new OkObjectResult(items);
-        }
-
+        [Authorize]
         [HttpPost("[action]")]
         public async Task<IActionResult> Product([FromBody] ProductRequest request)
         {
@@ -43,6 +36,14 @@ namespace MockMe.API.Controllers
 
             var data = await _mockService.ProductAdd(request);
             return new OkObjectResult(data);
+        }
+
+        [Authorize]
+        [HttpGet("Country")]
+        public async Task<IActionResult> Countries()
+        {
+            var items = await _mockService.GetCountriesAsync();
+            return new OkObjectResult(items);
         }
 
         [HttpPost("Encode")]
@@ -80,6 +81,7 @@ namespace MockMe.API.Controllers
             return new OkObjectResult(items);
         }
 
+        [Authorize]
         [HttpGet(nameof(Technologies))]
         public async Task<IActionResult> Technologies()
         {

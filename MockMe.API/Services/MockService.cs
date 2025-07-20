@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MockMe.Common;
 using MockMe.Model;
@@ -21,10 +20,9 @@ namespace MockMe.API.Services
     {
         readonly ILogger<MockService> _logger;
         readonly IMemoryCache _cache;
-        readonly IConfiguration _configuration;
 
-        public MockService(ILogger<MockService> logger, IMemoryCache cache, IConfiguration configuration) =>
-            (_logger, _cache, _configuration) = (logger, cache, configuration);
+        public MockService(ILogger<MockService> logger, IMemoryCache cache) =>
+            (_logger, _cache) = (logger, cache);
 
         public async Task<Product> ProductAdd(ProductRequest request)
         {
