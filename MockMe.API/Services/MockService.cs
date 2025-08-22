@@ -1,19 +1,16 @@
-﻿using Microsoft.Extensions.Caching.Memory;
+﻿using Bogus;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
-using MockMe.Common;
 using MockMe.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MockMe.API.Services
 {
     public interface IMockService
     {
-        Task<Product> ProductAdd(ProductRequest request);
-        Task<IEnumerable<Country>> GetCountriesAsync();
-        Task<IEnumerable<Product>> GetProductsAsync(int count);
+        IEnumerable<Country> GetCountries();
     }
 
     public class MockService : IMockService
@@ -24,37 +21,18 @@ namespace MockMe.API.Services
         public MockService(ILogger<MockService> logger, IMemoryCache cache) =>
             (_logger, _cache) = (logger, cache);
 
-        public async Task<Product> ProductAdd(ProductRequest request)
-        {
-            var data = new Product();
-
-            try
-            {
-                _logger.LogInformation("ProductRequest: {request}", request.ToJson(true));
-
-                data = MockUtil.GetData(request);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("ProductAdd Error {ex}", ex);
-            }
-
-            return await Task.FromResult(data);
-        }
-
-        public async Task<IEnumerable<Country>> GetCountriesAsync()
+        public IEnumerable<Country> GetCountries()
         {
             // Cache Countries for 24hrs due to high page load
-            return await _cache.GetOrCreateAsync("Countries", async e =>
+            return _cache.GetOrCreate("Countries", e =>
             {
-                e.SetOptions(new MemoryCacheEntryOptions
-                {
+                e.SetOptions(new MemoryCacheEntryOptions {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
                 });
 
                 try
                 {
-                    var countries = await Task.FromResult(MockUtil.Countries(5));
+                    var countries = GenerateCountries(5);
                     return countries.OrderBy(c => c.CountryName);
                 }
                 catch (Exception ex)
@@ -66,20 +44,24 @@ namespace MockMe.API.Services
             });
         }
 
-        public async Task<IEnumerable<Product>> GetProductsAsync(int count)
+        static List<Country> GenerateCountries(int count)
         {
-            var products = new List<Product>();
+            var countries = new Faker<Country>()
+                .RuleFor(o => o.CountryId, f => f.IndexFaker + 1)
+                .RuleFor(o => o.CountryName, f => f.Address.Country())
+                .RuleFor(o => o.CountryCode, f => f.Address.CountryCode())
+                .Generate(count);
 
-            try
+            if (countries.Exists(c => c.CountryName == "Australia"))
             {
-                products = MockUtil.Products(count);
+                countries.Single(c => c.CountryName == "Australia").CountryCode = "AU";
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError("GetProductsAsync Error {ex}", ex);
+                countries.Add(new Country { CountryId = count + 1, CountryCode = "AU", CountryName = "Australia" });
             }
 
-            return await Task.FromResult(products);
+            return countries;
         }
     }
 }

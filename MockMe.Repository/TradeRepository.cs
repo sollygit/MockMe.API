@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Bogus;
+using MockMe.Common;
+using MockMe.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using MockMe.Common;
-using MockMe.Model;
 
 namespace MockMe.Repository
 {
@@ -14,26 +15,15 @@ namespace MockMe.Repository
         Task<AssetTrade> UpdateAsync(Guid id, AssetTrade entity);
         Task<AssetTrade> DeleteAsync(Guid id);
         Task<AssetTrade> GenerateAsync();
-
-        List<CurrencyPair> CurrencyPairList();
     }
 
     public class TradeRepository : ITradeRepository
     {
-        private static List<CurrencyPair> CurrencyPairs;
-        private static List<AssetTrade> Trades;
+        static List<AssetTrade> Trades;
 
         public TradeRepository()
         {
-            if (CurrencyPairs == null)
-            {
-                CurrencyPairs = MockUtil.CurrencyPairs.ToList();
-            }
-
-            if (Trades == null)
-            {
-                Trades = MockUtil.Trades(10);
-            }
+            Trades ??= GenerateTrades(10);
         }
 
         public async Task<IEnumerable<AssetTrade>> GetAllAsync()
@@ -69,13 +59,25 @@ namespace MockMe.Repository
 
         public async Task<AssetTrade> GenerateAsync()
         {
-            var randomTrade = MockUtil.Trades(1).FirstOrDefault();
+            var randomTrade = GenerateTrades(1).FirstOrDefault();
             return await Task.FromResult(randomTrade);
         }
 
-        public List<CurrencyPair> CurrencyPairList()
+        List<AssetTrade> GenerateTrades(int count)
         {
-            return CurrencyPairs;
+            var currencyPairs = ((IEnumerable<CurrencyPair>)Enum.GetValues(typeof(CurrencyPair))).ToList();
+            var trades = new Faker<AssetTrade>()
+                .RuleFor(o => o.Id, f => Guid.NewGuid().ToString())
+                .RuleFor(o => o.Asset, f => {
+                    var pair = new Faker().Random.ListItem((IList<CurrencyPair>)currencyPairs);
+                    return new Asset((int)pair, pair.Description());
+                })
+                .RuleFor(o => o.Amount, f => decimal.Parse(f.Random.Decimal(1000).ToString("0.00")))
+                .RuleFor(o => o.Expiration, f => f.Random.Number(1, 1000))
+                .RuleFor(o => o.Payout, f => f.Random.Number(1, 1000))
+                .RuleFor(o => o.Direction, f => f.Random.Number(0, 1))
+                .Generate(count);
+            return trades;
         }
     }
 }

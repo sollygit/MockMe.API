@@ -21,28 +21,11 @@ namespace MockMe.API.Controllers
         public MockController(IMockService mockService) =>
             (_mockService) = (mockService);
 
-        [HttpGet("Product")]
-        public async Task<IActionResult> Products([FromQuery(Name = "_limit")] int limit)
-        {
-            var items = await _mockService.GetProductsAsync(limit);
-            return new OkObjectResult(items);
-        }
-
-        [Authorize]
-        [HttpPost("[action]")]
-        public async Task<IActionResult> Product([FromBody] ProductRequest request)
-        {
-            if (request == null) return BadRequest(ModelState);
-
-            var data = await _mockService.ProductAdd(request);
-            return new OkObjectResult(data);
-        }
-
         [Authorize]
         [HttpGet("Country")]
-        public async Task<IActionResult> Countries()
+        public IActionResult Countries()
         {
-            var items = await _mockService.GetCountriesAsync();
+            var items = _mockService.GetCountries();
             return new OkObjectResult(items);
         }
 
@@ -78,16 +61,6 @@ namespace MockMe.API.Controllers
             var path = @$"{Directory.GetCurrentDirectory()}\Shared\reports.json";
             var json = await System.IO.File.ReadAllTextAsync(path);
             var items = Deserializer.FromJsonDictionary<Report>(json).OrderBy(o => o.Key);
-            return new OkObjectResult(items);
-        }
-
-        [Authorize]
-        [HttpGet(nameof(Technologies))]
-        public async Task<IActionResult> Technologies()
-        {
-            var path = @$"{Directory.GetCurrentDirectory()}\Shared\technologies.json";
-            var json = await System.IO.File.ReadAllTextAsync(path);
-            var items = Deserializer.FromJsonList<Technology>(json).OrderBy(o => o.TechnologyId);
             return new OkObjectResult(items);
         }
     }

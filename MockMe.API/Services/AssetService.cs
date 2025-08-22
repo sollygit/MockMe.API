@@ -3,7 +3,6 @@ using Microsoft.Extensions.Caching.Memory;
 using MockMe.API.ViewModels;
 using MockMe.Common;
 using MockMe.Model;
-using MockMe.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,12 +18,10 @@ namespace MockMe.API.Services
     public class AssetService : IAssetService
     {
         private readonly IMemoryCache cache;
-        private readonly ITradeRepository tradeRepository;
 
-        public AssetService(IMemoryCache cache, ITradeRepository tradeRepository)
+        public AssetService(IMemoryCache cache)
         {
             this.cache = cache;
-            this.tradeRepository = tradeRepository;
         }
 
         public async Task<IEnumerable<AssetViewModel>> GetAllAsync()
@@ -34,7 +31,7 @@ namespace MockMe.API.Services
                 // Cache Assets
                 e.SetOptions(new MemoryCacheEntryOptions{ AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) });
 
-                var currencyPairs = tradeRepository.CurrencyPairList();
+                var currencyPairs = ((IEnumerable<CurrencyPair>)Enum.GetValues(typeof(CurrencyPair))).ToList();
                 var result = currencyPairs.Select(pair => 
                     Mapper.Map<AssetViewModel>(new Asset((int)pair, pair.Description())));
                 return await Task.FromResult(result);
