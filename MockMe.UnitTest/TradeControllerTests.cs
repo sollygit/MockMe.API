@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace MockMe.UnitTest
 {
     [TestClass]
-    public class MockControllerTests
+    public class TradeControllerTests
     {
         private readonly TestHostFixture _testHostFixture = new();
         private HttpClient _httpClient;
@@ -35,7 +35,7 @@ namespace MockMe.UnitTest
         [TestMethod]
         public async Task ShouldExpect401WhenNotLoggedIn()
         {
-            var response = await _httpClient.GetAsync("api/mock/product");
+            var response = await _httpClient.GetAsync("api/trade/countries");
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
 
             var result = await response.Content.ReadAsStringAsync();
@@ -43,7 +43,7 @@ namespace MockMe.UnitTest
         }
 
         [TestMethod]
-        public async Task ShouldGetAllProductsUsingSuccessLogin()
+        public async Task ShouldGetCountriesUsingSuccessLogin()
         {
             var credentials = new LoginRequest
             {
@@ -56,7 +56,7 @@ namespace MockMe.UnitTest
             var loginResult = JsonSerializer.Deserialize<LoginResult>(loginResponseContent);
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, loginResult.AccessToken);
-            var response = await _httpClient.GetAsync("api/mock/product");
+            var response = await _httpClient.GetAsync("api/trade/countries");
             response.EnsureSuccessStatusCode();
             var result = await response.Content.ReadAsStringAsync();
             Assert.IsNotNull(result);
@@ -71,7 +71,7 @@ namespace MockMe.UnitTest
             Assert.ThrowsException<SecurityTokenSignatureKeyNotFoundException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, invalidTokenString);
-            var response = await _httpClient.GetAsync("api/mock/product");
+            var response = await _httpClient.GetAsync("api/trade/countries");
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
@@ -92,19 +92,19 @@ namespace MockMe.UnitTest
             var invalidTokenString = jwtResult.AccessToken;
             Assert.ThrowsException<SecurityTokenExpiredException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, invalidTokenString);
-            var response = await _httpClient.GetAsync("api/mock/product");
+            var response = await _httpClient.GetAsync("api/trade/countries");
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
 
             // not expired
             jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-jwtTokenConfig.AccessTokenExpiration));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtResult.AccessToken);
-            response = await _httpClient.GetAsync("api/mock/product");
+            response = await _httpClient.GetAsync("api/trade/countries");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
             // not expired token 2
             jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-jwtTokenConfig.AccessTokenExpiration - 1).AddSeconds(1));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtResult.AccessToken);
-            response = await _httpClient.GetAsync("api/mock/product");
+            response = await _httpClient.GetAsync("api/trade/countries");
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         }
 

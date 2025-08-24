@@ -70,8 +70,7 @@ namespace MockMe.API
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<ITradeRepository, TradeRepository>();
             services.AddScoped<ITradeService, TradeService>();
-            services.AddScoped<IAssetService, AssetService>();
-            services.AddScoped<IMockService, MockService>();
+            services.AddScoped<ICountryService, TradeService>();
 
             services.AddSwaggerGen(c =>
             {

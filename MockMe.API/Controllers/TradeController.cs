@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MockMe.API.Services;
 using MockMe.API.ViewModels;
 using System;
@@ -11,19 +12,19 @@ namespace MockMe.API.Controllers
     [Route("api/[controller]")]
     public class TradeController : ControllerBase
     {
-        private readonly ITradeService tradeService;
-        private readonly IAssetService assetService;
+        readonly ITradeService _tradeService;
+        readonly ICountryService _countryService;
 
-        public TradeController(ITradeService tradeService, IAssetService assetService)
+        public TradeController(ITradeService tradeService, ICountryService countryService)
         {
-            this.tradeService = tradeService;
-            this.assetService = assetService;
+            _tradeService = tradeService;
+            _countryService = countryService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await tradeService.GetAllAsync());
+            return Ok(await _tradeService.GetAllAsync());
         }
 
         [HttpGet("{id}")]
@@ -31,7 +32,7 @@ namespace MockMe.API.Controllers
         {
             if (id == Guid.Empty) return BadRequest("Id can't be empty");
 
-            var item = await tradeService.GetAsync(id);
+            var item = await _tradeService.GetAsync(id);
 
             if (item == null)
             {
@@ -41,42 +42,44 @@ namespace MockMe.API.Controllers
             return new ObjectResult(item);
         }
 
-        [HttpPost("[action]")]
+        [HttpGet("[action]")]
         public async Task<IActionResult> Generate()
         {
-            var item = await tradeService.GenerateAsync();
+            var item = await _tradeService.GenerateAsync();
             return CreatedAtAction("Generate", new { id = item.Id }, item);
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(AssetTradeViewModel trade)
         {
-            var item = await tradeService.SaveAsync(trade);
+            var item = await _tradeService.SaveAsync(trade);
             return CreatedAtAction("Post", new { id = item.Id }, item);
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(Guid id, [FromBody] AssetTradeViewModel trade)
         {
-            if (await tradeService.GetAsync(id) == null) return NotFound(id);
+            if (await _tradeService.GetAsync(id) == null) return NotFound(id);
 
-            var item = await tradeService.UpdateAsync(id, trade);
+            var item = await _tradeService.UpdateAsync(id, trade);
             return new OkObjectResult(item);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            if (await tradeService.GetAsync(id) == null) return NotFound(id);
+            if (await _tradeService.GetAsync(id) == null) return NotFound(id);
 
-            var item = await tradeService.DeleteAsync(id);
+            var item = await _tradeService.DeleteAsync(id);
             return new OkObjectResult(item);
         }
 
-        [HttpGet("Assets")]
-        public async Task<IActionResult> Assets()
+        [Authorize]
+        [HttpGet("Countries")]
+        public IActionResult Countries()
         {
-            return Ok(await assetService.GetAllAsync());
+            var items = _countryService.GetCountries();
+            return new OkObjectResult(items);
         }
     }
 }
