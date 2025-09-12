@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace MockMe.API.Controllers
 {
     [ApiController]
-    [ApiExplorerSettings(GroupName = "v2")]
+    [ApiExplorerSettings(GroupName = "file")]
     [Produces("application/json")]
     [Route("api/[controller]")]
     public class FileController : ControllerBase
@@ -32,7 +32,6 @@ namespace MockMe.API.Controllers
         {
             _logger.LogDebug("Validating formId={FormId} for file={id}", form.TemplateId, id);
 
-            var ext = Path.GetExtension(form.TemplateFile.FileName);
             if (form.TemplateFile?.Length == 0) return BadRequest("The file is empty.");
             
             using var memoryStream = new MemoryStream();

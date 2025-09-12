@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MockMe.API.Controllers
 {
     [ApiController]
-    [ApiExplorerSettings(GroupName = "v1")]
+    [ApiExplorerSettings(GroupName = "trade")]
     [Route("api/[controller]")]
     public class TradeController : ControllerBase
     {
@@ -76,9 +76,9 @@ namespace MockMe.API.Controllers
 
         [Authorize]
         [HttpGet("Countries")]
-        public IActionResult Countries()
+        public async Task<IActionResult> Countries()
         {
-            var items = _countryService.GetCountries();
+            var items = await _countryService.GetCountriesAsync();
             return new OkObjectResult(items);
         }
     }

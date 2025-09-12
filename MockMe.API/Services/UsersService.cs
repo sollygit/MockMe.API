@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using Microsoft.Extensions.Logging;
-using MockMe.Common;
+﻿using Microsoft.Extensions.Logging;
+using MockMe.Model;
+using System.Collections.Generic;
 
 namespace MockMe.API.Services
 {
@@ -23,7 +23,7 @@ namespace MockMe.API.Services
 
         public bool IsValidUserCredentials(string userName, string password)
         {
-            _logger.LogInformation($"Validating user [{userName}]");
+            _logger.LogDebug("Validating user credentials for {UserName}", userName);
             if (string.IsNullOrWhiteSpace(userName)) return false;
 
             if (string.IsNullOrWhiteSpace(password))

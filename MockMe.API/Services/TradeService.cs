@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Bogus;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using MockMe.API.ViewModels;
 using MockMe.Common;
 using MockMe.Model;
@@ -25,7 +23,7 @@ namespace MockMe.API.Services
 
     public interface ICountryService
     {
-        IEnumerable<Country> GetCountries();
+        Task<IEnumerable<Country>> GetCountriesAsync();
     }
 
     public interface IAssetService
@@ -35,13 +33,11 @@ namespace MockMe.API.Services
 
     public class TradeService : ITradeService, ICountryService, IAssetService
     {
-        readonly ILogger<TradeService> _logger;
         readonly IMemoryCache _cache;
         readonly ITradeRepository _tradeRepository;
 
-        public TradeService(ILogger<TradeService> logger, IMemoryCache cache, ITradeRepository tradeRepository)
+        public TradeService(IMemoryCache cache, ITradeRepository tradeRepository)
         {
-            _logger = logger;
             _cache = cache;
             _tradeRepository = tradeRepository;
         }
@@ -80,27 +76,14 @@ namespace MockMe.API.Services
             return await _tradeRepository.SaveAsync(fakeTrade);
         }
 
-        public IEnumerable<Country> GetCountries()
+        public async Task<IEnumerable<Country>> GetCountriesAsync()
         {
-            // Cache Countries for 24hrs due to high page load
-            return _cache.GetOrCreate("Countries", e =>
-            {
-                e.SetOptions(new MemoryCacheEntryOptions
-                {
+            // Cached Countries
+            return await _cache.GetOrCreate("Countries", async e => {
+                e.SetOptions(new MemoryCacheEntryOptions {
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
                 });
-
-                try
-                {
-                    var countries = GenerateCountries(5);
-                    return countries.OrderBy(c => c.CountryName);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError("GetCountriesAsync Error {ex}", ex);
-                }
-
-                return Enumerable.Empty<Country>();
+                return await Task.FromResult(Constants.COUNTRIES);
             });
         }
 
@@ -108,7 +91,7 @@ namespace MockMe.API.Services
         {
             return await _cache.GetOrCreateAsync("Assets", async e =>
             {
-                // Cache Assets
+                // Cached Assets
                 e.SetOptions(new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) });
 
                 var currencyPairs = ((IEnumerable<CurrencyPair>)Enum.GetValues(typeof(CurrencyPair))).ToList();
@@ -116,26 +99,6 @@ namespace MockMe.API.Services
                     Mapper.Map<AssetViewModel>(new Asset((int)pair, pair.Description())));
                 return await Task.FromResult(result);
             });
-        }
-
-        static List<Country> GenerateCountries(int count)
-        {
-            var countries = new Faker<Country>()
-                .RuleFor(o => o.CountryId, f => f.IndexFaker + 1)
-                .RuleFor(o => o.CountryName, f => f.Address.Country())
-                .RuleFor(o => o.CountryCode, f => f.Address.CountryCode())
-                .Generate(count);
-
-            if (countries.Exists(c => c.CountryName == "Australia"))
-            {
-                countries.Single(c => c.CountryName == "Australia").CountryCode = "AU";
-            }
-            else
-            {
-                countries.Add(new Country { CountryId = count + 1, CountryCode = "AU", CountryName = "Australia" });
-            }
-
-            return countries;
         }
     }
 }

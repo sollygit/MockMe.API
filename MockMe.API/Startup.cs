@@ -72,10 +72,10 @@ namespace MockMe.API
             services.AddScoped<ITradeService, TradeService>();
             services.AddScoped<ICountryService, TradeService>();
 
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Mock JWT Auth Demo", Version = "v1" });
-                c.SwaggerDoc("v2", new OpenApiInfo { Title = "File Upload API", Version = "v2" });
+            services.AddSwaggerGen(c => {
+                c.SwaggerDoc("jwt", new OpenApiInfo { Title = "JWT Auth API" });
+                c.SwaggerDoc("trade", new OpenApiInfo { Title = "Trade API" });
+                c.SwaggerDoc("file", new OpenApiInfo { Title = "File Upload API" });
 
                 var securityScheme = new OpenApiSecurityScheme
                 {
@@ -92,8 +92,7 @@ namespace MockMe.API
                     }
                 };
                 c.AddSecurityDefinition(securityScheme.Reference.Id, securityScheme);
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement
-                {
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
                     {securityScheme, Array.Empty<string>()}
                 });
             });
@@ -108,22 +107,20 @@ namespace MockMe.API
             }
 
             app.UseHttpsRedirection();
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mock JWT Auth API");
-                c.SwaggerEndpoint("/swagger/v2/swagger.json", "File Upload API");
-                c.DocumentTitle = "Mock API";
-                c.DefaultModelsExpandDepth(0);
+                c.DocumentTitle = "MockMe API";
                 c.RoutePrefix = string.Empty;
+                c.SwaggerEndpoint("/swagger/jwt/swagger.json", "JWT Auth API");
+                c.SwaggerEndpoint("/swagger/trade/swagger.json", "Trade API");
+                c.SwaggerEndpoint("/swagger/file/swagger.json", "File Upload API");
             });
 
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors("CorsPolicy");
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

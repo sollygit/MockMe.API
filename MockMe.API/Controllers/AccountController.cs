@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace MockMe.API.Controllers
 {
     [ApiController]
-    [ApiExplorerSettings(GroupName = "v1")]
+    [ApiExplorerSettings(GroupName = "jwt")]
     [Authorize]
     [Route("api/[controller]")]
     public class AccountController : ControllerBase
@@ -52,7 +52,9 @@ namespace MockMe.API.Controllers
             };
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
-            _logger.LogInformation($"User [{request.UserName}] logged in the system.");
+
+            _logger.LogDebug("User [{UserName}] logged in the system.", request.UserName);
+
             return Ok(new LoginResult
             {
                 UserName = request.UserName,
@@ -82,7 +84,7 @@ namespace MockMe.API.Controllers
             // https://github.com/auth0/node-jsonwebtoken/issues/375
             var userName = User.Identity?.Name;
             _jwtAuthManager.RemoveRefreshTokenByUserName(userName);
-            _logger.LogInformation($"User [{userName}] logged out the system.");
+            _logger.LogDebug("User [{UserName}] logged out the system.", userName);
             return Ok();
         }
 
@@ -93,7 +95,7 @@ namespace MockMe.API.Controllers
             try
             {
                 var userName = User.Identity?.Name;
-                _logger.LogInformation($"User [{userName}] is trying to refresh JWT token.");
+                _logger.LogDebug("User [{UserName}] is trying to refresh JWT token.", userName);
 
                 if (string.IsNullOrWhiteSpace(request.RefreshToken))
                 {
@@ -102,7 +104,7 @@ namespace MockMe.API.Controllers
 
                 var accessToken = await HttpContext.GetTokenAsync("Bearer", "access_token");
                 var jwtResult = _jwtAuthManager.Refresh(request.RefreshToken, accessToken, DateTime.Now);
-                _logger.LogInformation($"User [{userName}] has refreshed JWT token.");
+                _logger.LogDebug("User [{UserName}] has refreshed JWT token.", userName);
                 return Ok(new LoginResult
                 {
                     UserName = userName,
@@ -122,17 +124,17 @@ namespace MockMe.API.Controllers
         public ActionResult Impersonate([FromBody] ImpersonationRequest request)
         {
             var userName = User.Identity?.Name;
-            _logger.LogInformation($"User [{userName}] is trying to impersonate [{request.UserName}].");
+            _logger.LogDebug("User [{userName}] is trying to impersonate [{request.UserName}].", userName, request.UserName);
 
             var impersonatedRole = _userService.GetUserRole(request.UserName);
             if (string.IsNullOrWhiteSpace(impersonatedRole))
             {
-                _logger.LogInformation($"User [{userName}] failed to impersonate [{request.UserName}] due to the target user not found.");
+                _logger.LogDebug("User [{userName}] failed to impersonate [{request.UserName}] due to the target user not found.", userName, request.UserName);
                 return BadRequest($"The target user [{request.UserName}] is not found.");
             }
             if (impersonatedRole == UserRoles.Admin)
             {
-                _logger.LogInformation($"User [{userName}] is not allowed to impersonate another Admin.");
+                _logger.LogDebug("User [{userName}] failed to impersonate [{request.UserName}] due to the target user is an admin.", userName, request.UserName);
                 return BadRequest("This action is not supported.");
             }
 
@@ -144,7 +146,7 @@ namespace MockMe.API.Controllers
             };
 
             var jwtResult = _jwtAuthManager.GenerateTokens(request.UserName, claims, DateTime.Now);
-            _logger.LogInformation($"User [{request.UserName}] is impersonating [{request.UserName}] in the system.");
+            _logger.LogDebug("User [{UserName}] has impersonated [{ImpersonatedUserName}].", userName, request.UserName);
             return Ok(new LoginResult
             {
                 UserName = request.UserName,
@@ -164,7 +166,7 @@ namespace MockMe.API.Controllers
             {
                 return BadRequest("You are not impersonating anyone.");
             }
-            _logger.LogInformation($"User [{originalUserName}] is trying to stop impersonate [{userName}].");
+            _logger.LogDebug("User [{UserName}] is trying to stop impersonating and back to own identity [{OriginalUserName}].", userName, originalUserName);
 
             var role = _userService.GetUserRole(originalUserName);
             var claims = new[]
@@ -174,7 +176,7 @@ namespace MockMe.API.Controllers
             };
 
             var jwtResult = _jwtAuthManager.GenerateTokens(originalUserName, claims, DateTime.Now);
-            _logger.LogInformation($"User [{originalUserName}] has stopped impersonation.");
+            _logger.LogDebug("User [{UserName}] has stopped impersonating and back to own identity.", originalUserName);
             return Ok(new LoginResult
             {
                 UserName = originalUserName,

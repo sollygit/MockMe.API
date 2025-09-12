@@ -162,7 +162,7 @@ namespace MockMe.UnitTest
             var jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-1));
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, jwtResult.AccessToken);
-            var request = new ImpersonationRequest { UserName = "test1" };
+            var request = new ImpersonationRequest { UserName = "test" };
             var response = await _httpClient.PostAsync("api/account/impersonation",
                 new StringContent(JsonSerializer.Serialize(request), Encoding.UTF8, MediaTypeNames.Application.Json));
             var responseContent = await response.Content.ReadAsStringAsync();
@@ -185,7 +185,7 @@ namespace MockMe.UnitTest
         [TestMethod]
         public async Task ShouldForbidNonAdminToImpersonate()
         {
-            const string userName = "test1";
+            const string userName = "test";
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
@@ -205,7 +205,7 @@ namespace MockMe.UnitTest
         [TestMethod]
         public async Task ShouldAllowAdminToStopImpersonation()
         {
-            const string userName = "test1";
+            const string userName = "test";
             const string originalUserName = "admin";
             var claims = new[]
             {
@@ -238,7 +238,7 @@ namespace MockMe.UnitTest
         [TestMethod]
         public async Task ShouldReturnBadRequestIfStopImpersonationWhenNotImpersonating()
         {
-            const string userName = "test1";
+            const string userName = "test";
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
