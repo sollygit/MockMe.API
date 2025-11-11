@@ -94,7 +94,7 @@ namespace MockMe.API.Controllers
 
             foreach (var file in files)
             {
-                var filePath = Path.Combine(@"App_Data", id.ToString(), @"Files", file.FileName);
+                var filePath = Path.Combine(@"App_Data", id.ToString(), file.FileName);
                 new FileInfo(filePath).Directory?.Create();
 
                 await using var stream = new FileStream(filePath, FileMode.Create);

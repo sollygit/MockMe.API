@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="App_Data\8888\Files\" />
     <Folder Include="Properties\ServiceDependencies\" />
   </ItemGroup>
 
