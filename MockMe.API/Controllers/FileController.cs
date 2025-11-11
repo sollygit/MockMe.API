@@ -24,22 +24,6 @@ namespace MockMe.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost("{id:int}/encode")]
-        [ProducesResponseType(typeof(TemplateFormResult), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [RequestSizeLimit(long.MaxValue)]
-        public async Task<IActionResult> FileEncode(int id, [FromForm] TemplateForm form)
-        {
-            _logger.LogDebug("Validating formId={FormId} for file={id}", form.TemplateId, id);
-
-            if (form.TemplateFile?.Length == 0) return BadRequest("The file is empty.");
-            
-            using var memoryStream = new MemoryStream();
-            await form.TemplateFile.CopyToAsync(memoryStream);
-            var bytes = memoryStream.ToArray();
-            return Ok(Convert.ToBase64String(bytes));
-        }
-
         [HttpGet("{id:int}/{templateId:int}")]
         [ProducesResponseType(typeof(TemplateFormResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,7 +35,7 @@ namespace MockMe.API.Controllers
         }
 
         [HttpPost("{id:int}/upload")]
-        [ProducesResponseType(typeof(TemplateFormResult), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [RequestSizeLimit(long.MaxValue)]
         public async Task<ActionResult<TemplateFormResult>> FileUpload(int id, [FromForm] TemplateForm form)
@@ -62,8 +46,7 @@ namespace MockMe.API.Controllers
             if (form.TemplateFile?.Length == 0) return BadRequest("The file is empty.");
             if (ext != ".pdf" && ext != ".docx" && ext != ".json" && ext != ".xml") return BadRequest($"The file is not supported.");
 
-            var filename = $"{DateTime.Now:dd-MM-yyyy-HHmm}_{form.TemplateFile.FileName}";
-            var filePath = Path.Combine(@"App_Data", filename);
+            var filePath = Path.Combine(@"App_Data", form.TemplateFile.FileName);
             new FileInfo(filePath).Directory?.Create();
 
             await using (var stream = new FileStream(filePath, FileMode.Create))
@@ -76,14 +59,14 @@ namespace MockMe.API.Controllers
             {
                 FileId = id,
                 TemplateId = form.TemplateId,
-                FileName = filename,
+                FileName = form.TemplateFile.FileName,
                 FileSize = form.TemplateFile.Length
             };
             return CreatedAtAction(nameof(FileView), new { id, form.TemplateId }, result);
         }
 
         [HttpPost("{id:int}/uploads")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [RequestSizeLimit(long.MaxValue)]
         public async Task<ActionResult<List<TemplateFormResult>>> FilesUpload(int id, [Required] List<IFormFile> files)
@@ -102,12 +85,13 @@ namespace MockMe.API.Controllers
                 _logger.LogDebug("Uploaded {file.FileName} and saved in {filePath}.", file.FileName, filePath);
 
                 result.Add(new TemplateFormResult {
+                    FileId = -1,
                     TemplateId = id,
                     FileName = file.FileName,
                     FileSize = file.Length
                 });
             }
-            return Ok(result);
+            return CreatedAtAction(nameof(FileView), new { id, templateId = id }, result);
         }
 
         [HttpGet("{filename}")]
