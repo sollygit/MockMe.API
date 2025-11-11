@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Extensions.Logging;
 using MockMe.Model;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.IO;
@@ -24,16 +23,6 @@ namespace MockMe.API.Controllers
             _logger = logger;
         }
 
-        [HttpGet("{id:int}/{templateId:int}")]
-        [ProducesResponseType(typeof(TemplateFormResult), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<TemplateFormResult> FileView(int id, int templateId)
-        {
-            _logger.LogDebug("Viewing templateId={templateId} for file={id}", templateId, id);
-            await Task.Delay(1000);
-            return new TemplateFormResult { TemplateId = templateId, FileId = id };
-        }
-
         [HttpPost("{id:int}/upload")]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -51,9 +40,8 @@ namespace MockMe.API.Controllers
 
             await using (var stream = new FileStream(filePath, FileMode.Create))
             {
-                _logger.LogDebug("Saving {FileName}", form.TemplateFile.FileName);
                 await form.TemplateFile.CopyToAsync(stream);
-                _logger.LogDebug("File saved {filePath}.", filePath);
+                _logger.LogDebug("File uploaded to {filePath}.", filePath);
             }
             var result = new TemplateFormResult
             {
@@ -62,7 +50,7 @@ namespace MockMe.API.Controllers
                 FileName = form.TemplateFile.FileName,
                 FileSize = form.TemplateFile.Length
             };
-            return CreatedAtAction(nameof(FileView), new { id, form.TemplateId }, result);
+            return CreatedAtAction(nameof(FileUpload), new { id, form.TemplateId }, result);
         }
 
         [HttpPost("{id:int}/uploads")]
@@ -82,7 +70,7 @@ namespace MockMe.API.Controllers
 
                 await using var stream = new FileStream(filePath, FileMode.Create);
                 await file.CopyToAsync(stream);
-                _logger.LogDebug("Uploaded {file.FileName} and saved in {filePath}.", file.FileName, filePath);
+                _logger.LogDebug("File uploaded to {filePath}.", filePath);
 
                 result.Add(new TemplateFormResult {
                     FileId = -1,
@@ -91,10 +79,12 @@ namespace MockMe.API.Controllers
                     FileSize = file.Length
                 });
             }
-            return CreatedAtAction(nameof(FileView), new { id, templateId = id }, result);
+            return CreatedAtAction(nameof(FilesUpload), new { id, templateId = id }, result);
         }
 
         [HttpGet("{filename}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
         public async Task<ActionResult> FileDownload(string filename)
         {
             // validation and get the file
