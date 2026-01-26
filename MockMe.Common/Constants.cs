@@ -1,10 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using MockMe.Model;
+using System.Collections.Generic;
 
-namespace MockMe.Model
+namespace MockMe.Common
 {
     public class Constants
     {
-        public static readonly IDictionary<string, string> USERS = new Dictionary<string, string>
+        public const string Admin = "Admin";
+        public const string BasicUser = "BasicUser";
+
+        public static readonly IDictionary<string, string> USERS = new Dictionary<string, string> 
         {
             { "admin", "password" },
             { "test", "password" }

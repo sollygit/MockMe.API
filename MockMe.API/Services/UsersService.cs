@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using MockMe.Model;
-using System.Collections.Generic;
+using MockMe.Common;
 
 namespace MockMe.API.Services
 {
@@ -14,8 +13,7 @@ namespace MockMe.API.Services
     public class UserService : IUserService
     {
         readonly ILogger<UserService> _logger;
-        readonly IDictionary<string, string> _users = Constants.USERS;
-        
+
         public UserService(ILogger<UserService> logger)
         {
             _logger = logger;
@@ -31,12 +29,12 @@ namespace MockMe.API.Services
                 return false;
             }
 
-            return _users.TryGetValue(userName, out var p) && p == password;
+            return Constants.USERS.TryGetValue(userName, out var p) && p == password;
         }
 
         public bool IsAnExistingUser(string userName)
         {
-            return _users.ContainsKey(userName);
+            return Constants.USERS.ContainsKey(userName);
         }
 
         public string GetUserRole(string userName)
@@ -48,16 +46,10 @@ namespace MockMe.API.Services
 
             if (userName == "admin")
             {
-                return UserRoles.Admin;
+                return Constants.Admin;
             }
 
-            return UserRoles.BasicUser;
+            return Constants.BasicUser;
         }
-    }
-
-    public static class UserRoles
-    {
-        public const string Admin = nameof(Admin);
-        public const string BasicUser = nameof(BasicUser);
     }
 }

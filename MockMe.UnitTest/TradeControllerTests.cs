@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockMe.API.Controllers;
 using MockMe.API.Infrastructure;
-using MockMe.API.Services;
+using MockMe.Common;
 using System;
 using System.Net;
 using System.Net.Http;
@@ -68,7 +68,7 @@ namespace MockMe.UnitTest
             const string invalidTokenString = @"eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJBZG1pbiIsImV4cCI6MTcwNzAzMTE5MiwiaXNzIjoiaHR0cHM6Ly9teXdlYmFwaS5jb20iLCJhdWQiOiJodHRwczovL215d2ViYXBpLmNvbSJ9.sx_togy1FnalWpAnxN6vKKGeuG37DkwMoJCpoZbZ3T";
 
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
-            Assert.ThrowsException<SecurityTokenSignatureKeyNotFoundException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
+            Assert.ThrowsExactly<SecurityTokenSignatureKeyNotFoundException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, invalidTokenString);
             var response = await _httpClient.GetAsync("api/trade/countries");
@@ -82,7 +82,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.Admin)
+                new Claim(ClaimTypes.Role, Constants.Admin)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var jwtTokenConfig = _serviceProvider.GetRequiredService<JwtTokenConfig>();
@@ -90,7 +90,7 @@ namespace MockMe.UnitTest
             // expired token
             var jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-jwtTokenConfig.AccessTokenExpiration - 1));
             var invalidTokenString = jwtResult.AccessToken;
-            Assert.ThrowsException<SecurityTokenExpiredException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
+            Assert.ThrowsExactly<SecurityTokenExpiredException>(() => jwtAuthManager.DecodeJwtToken(invalidTokenString));
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, invalidTokenString);
             var response = await _httpClient.GetAsync("api/trade/countries");
             Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);

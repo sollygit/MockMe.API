@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using MockMe.API.Infrastructure;
 using MockMe.API.Services;
+using MockMe.Common;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
@@ -120,7 +121,7 @@ namespace MockMe.API.Controllers
         }
 
         [HttpPost("impersonation")]
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = Constants.Admin)]
         public ActionResult Impersonate([FromBody] ImpersonationRequest request)
         {
             var userName = User.Identity?.Name;
@@ -132,7 +133,7 @@ namespace MockMe.API.Controllers
                 _logger.LogDebug("User [{userName}] failed to impersonate [{request.UserName}] due to the target user not found.", userName, request.UserName);
                 return BadRequest($"The target user [{request.UserName}] is not found.");
             }
-            if (impersonatedRole == UserRoles.Admin)
+            if (impersonatedRole == Constants.Admin)
             {
                 _logger.LogDebug("User [{userName}] failed to impersonate [{request.UserName}] due to the target user is an admin.", userName, request.UserName);
                 return BadRequest("This action is not supported.");

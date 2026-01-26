@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\MockMe.Common\MockMe.Common.csproj" />
-    <ProjectReference Include="..\MockMe.Model\MockMe.Model.csproj" />
   </ItemGroup>
 
 </Project>

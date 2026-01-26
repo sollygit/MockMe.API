@@ -5,6 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockMe.API.Controllers;
 using MockMe.API.Infrastructure;
 using MockMe.API.Services;
+using MockMe.Common;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -61,14 +62,14 @@ namespace MockMe.UnitTest
             var loginResult = JsonSerializer.Deserialize<LoginResult>(loginResponseContent);
             Assert.AreEqual(credentials.UserName, loginResult.UserName);
             Assert.IsNull(loginResult.OriginalUserName);
-            Assert.AreEqual(UserRoles.Admin, loginResult.Role);
+            Assert.AreEqual(Constants.Admin, loginResult.Role);
             Assert.IsFalse(string.IsNullOrWhiteSpace(loginResult.AccessToken));
             Assert.IsFalse(string.IsNullOrWhiteSpace(loginResult.RefreshToken));
 
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var (principal, jwtSecurityToken) = jwtAuthManager.DecodeJwtToken(loginResult.AccessToken);
             Assert.AreEqual(credentials.UserName, principal.Identity.Name);
-            Assert.AreEqual(UserRoles.Admin, principal.FindFirst(ClaimTypes.Role).Value);
+            Assert.AreEqual(Constants.Admin, principal.FindFirst(ClaimTypes.Role).Value);
             Assert.IsNotNull(jwtSecurityToken);
         }
 
@@ -101,7 +102,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.Admin)
+                new Claim(ClaimTypes.Role, Constants.Admin)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-1));
@@ -130,7 +131,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.Admin)
+                new Claim(ClaimTypes.Role, Constants.Admin)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var jwtTokenConfig = _serviceProvider.GetRequiredService<JwtTokenConfig>();
@@ -156,7 +157,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.Admin)
+                new Claim(ClaimTypes.Role, Constants.Admin)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-1));
@@ -171,13 +172,13 @@ namespace MockMe.UnitTest
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(request.UserName, result.UserName);
             Assert.AreEqual(userName, result.OriginalUserName);
-            Assert.AreEqual(UserRoles.BasicUser, result.Role);
+            Assert.AreEqual(Constants.BasicUser, result.Role);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.AccessToken));
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.RefreshToken));
 
             var (principal, jwtSecurityToken) = jwtAuthManager.DecodeJwtToken(result.AccessToken);
             Assert.AreEqual(request.UserName, principal.Identity.Name);
-            Assert.AreEqual(UserRoles.BasicUser, principal.FindFirst(ClaimTypes.Role).Value);
+            Assert.AreEqual(Constants.BasicUser, principal.FindFirst(ClaimTypes.Role).Value);
             Assert.AreEqual(userName, principal.FindFirst("OriginalUserName").Value);
             Assert.IsNotNull(jwtSecurityToken);
         }
@@ -189,7 +190,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.BasicUser)
+                new Claim(ClaimTypes.Role, Constants.BasicUser)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-1));
@@ -210,7 +211,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.BasicUser),
+                new Claim(ClaimTypes.Role, Constants.BasicUser),
                 new Claim("OriginalUserName", originalUserName)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
@@ -224,13 +225,13 @@ namespace MockMe.UnitTest
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual(originalUserName, result.UserName);
             Assert.IsTrue(string.IsNullOrWhiteSpace(result.OriginalUserName));
-            Assert.AreEqual(UserRoles.Admin, result.Role);
+            Assert.AreEqual(Constants.Admin, result.Role);
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.AccessToken));
             Assert.IsFalse(string.IsNullOrWhiteSpace(result.RefreshToken));
 
             var (principal, jwtSecurityToken) = jwtAuthManager.DecodeJwtToken(result.AccessToken);
             Assert.AreEqual(originalUserName, principal.Identity.Name);
-            Assert.AreEqual(UserRoles.Admin, principal.FindFirst(ClaimTypes.Role).Value);
+            Assert.AreEqual(Constants.Admin, principal.FindFirst(ClaimTypes.Role).Value);
             Assert.IsTrue(string.IsNullOrWhiteSpace(principal.FindFirst("OriginalUserName")?.Value));
             Assert.IsNotNull(jwtSecurityToken);
         }
@@ -242,7 +243,7 @@ namespace MockMe.UnitTest
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name,userName),
-                new Claim(ClaimTypes.Role, UserRoles.BasicUser)
+                new Claim(ClaimTypes.Role, Constants.BasicUser)
             };
             var jwtAuthManager = _serviceProvider.GetRequiredService<IJwtAuthManager>();
             var jwtResult = jwtAuthManager.GenerateTokens(userName, claims, DateTime.Now.AddMinutes(-1));

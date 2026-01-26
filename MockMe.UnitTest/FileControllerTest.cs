@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockMe.API;
-using System;
 using System.IO;
 using System.Net;
 using System.Net.Http;
@@ -19,8 +18,10 @@ namespace MockMe.UnitTest
         [ClassInitialize]
         public static void ClassInit(TestContext testContext)
         {
-            Console.WriteLine(testContext.TestName);
-            _factory = new WebApplicationFactory<Startup>().WithWebHostBuilder(builder => builder.UseSetting("https_port", "5001").UseEnvironment("Testing"));
+            _factory = new WebApplicationFactory<Startup>()
+                .WithWebHostBuilder(builder => builder
+                    .UseSetting("https_port", "5001")
+                    .UseEnvironment("Testing"));
         }
 
         [TestMethod]
@@ -39,14 +40,13 @@ namespace MockMe.UnitTest
             form.Add(new StringContent("reading"), "Courses");
             form.Add(new StringContent("math"), "Courses");
 
-            var response = await client.PostAsync("api/file/9998/upload", form);
+            var response = await client.PostAsync("api/file/8888/upload", form);
             var json = await response.Content.ReadAsStringAsync();
 
+            Assert.IsNotNull(json);
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
-            Assert.AreEqual("/api/file/9998/101", response.Headers.Location?.AbsolutePath.ToLower());
-            Assert.IsNotNull(json);
-            Assert.IsTrue(response.StatusCode == HttpStatusCode.Created);
+            Assert.AreEqual("/api/file/8888/upload", response.Headers.Location?.AbsolutePath.ToLower());
         }
 
         [TestMethod]
@@ -65,7 +65,7 @@ namespace MockMe.UnitTest
             form.Add(new StringContent("Reading"), "Courses");
             form.Add(new StringContent("Math"), "Courses");
 
-            var response = await client.PostAsync("api/file/9998/upload", form);
+            var response = await client.PostAsync("api/file/8888/upload", form);
 
             Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
@@ -94,13 +94,13 @@ namespace MockMe.UnitTest
             form.Add(fileContent2, "Files", Path.GetFileName(testFile2));
             form.Add(fileContent3, "Files", Path.GetFileName(testFile3));
 
-            var response = await client.PostAsync("api/file/9998/uploads", form);
+            var response = await client.PostAsync("api/file/8888/uploads", form);
             var json = await response.Content.ReadAsStringAsync();
 
-            Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
-            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
             Assert.IsNotNull(json);
-            Assert.IsTrue(response.StatusCode == HttpStatusCode.OK);
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
+            Assert.AreEqual("application/json; charset=utf-8", response.Content.Headers.ContentType?.ToString());
+            Assert.AreEqual("/api/file/8888/uploads", response.Headers.Location?.AbsolutePath.ToLower());
         }
 
         [TestMethod]
