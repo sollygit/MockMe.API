@@ -14,13 +14,9 @@ namespace MockMe.API
 
             Mapper.Initialize(cfg =>
             {
-                cfg.CreateMap<Asset, AssetViewModel>()
-                .ForMember(o => o.Id, map => map.MapFrom(o => o.Id))
-                .ForMember(o => o.Name, map => map.MapFrom(o => o.Name))
-                .ReverseMap();
-
                 cfg.CreateMap<AssetTrade, AssetTradeViewModel>()
-                .ForMember(o => o.Asset, map => map.MapFrom(o => o.Asset))
+                .ForMember(o => o.Id, map => map.MapFrom(o => o.Asset.Id))
+                .ForMember(o => o.Name, map => map.MapFrom(o => o.Asset.Name))
                 .ForMember(o => o.Amount, map => map.MapFrom(o => o.Amount))
                 .ForMember(o => o.Payout, map => map.MapFrom(o => o.Payout))
                 .ForMember(o => o.Direction, map => map.MapFrom(o => o.Direction))

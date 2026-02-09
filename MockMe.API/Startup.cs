@@ -68,9 +68,10 @@ namespace MockMe.API
             services.AddSingleton<IJwtAuthManager, JwtAuthManager>();
             services.AddHostedService<JwtRefreshTokenCache>();
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<ITradeRepository, TradeRepository>();
             services.AddScoped<ITradeService, TradeService>();
             services.AddScoped<ICountryService, TradeService>();
+            services.AddScoped<IAssetService, TradeService>();
+            services.AddSingleton<ITradeRepository, TradeRepository>();
 
             services.AddSwaggerGen(c => {
                 c.SwaggerDoc("jwt", new OpenApiInfo { Title = "JWT Auth API" });

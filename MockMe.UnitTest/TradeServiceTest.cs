@@ -58,7 +58,8 @@ namespace MockMe.UnitTest
             });
 
             // Act
-            var entity = new AssetTradeViewModel { Asset = new AssetViewModel { Id = trade.Asset.Id, Name = trade.Asset.Name }, Amount = trade.Amount, Direction = trade.Direction };
+                
+            var entity = new AssetTradeViewModel { Id = trade.Asset.Id, Name = trade.Asset.Name, Amount = trade.Amount, Direction = trade.Direction };
             await mockService.Object.SaveAsync(entity);
             var actual = await mockService.Object.GetAsync(Guid.Parse(trade.Id));
 
@@ -101,7 +102,7 @@ namespace MockMe.UnitTest
             });
 
             // Act
-            var entity = new AssetTradeViewModel { Asset = new AssetViewModel { Id = trade.Asset.Id, Name = trade.Asset.Name }, Amount = trade.Amount, Direction = trade.Direction };
+            var entity = new AssetTradeViewModel { Id = trade.Asset.Id, Name = trade.Asset.Name, Amount = trade.Amount, Direction = trade.Direction };
             var actual = await mockService.Object.SaveAsync(entity);
 
             // Assert
@@ -136,7 +137,7 @@ namespace MockMe.UnitTest
             });
 
             // Act
-            var entity = new AssetTradeViewModel { Asset = new AssetViewModel { Id = trade.Asset.Id, Name = trade.Asset.Name }, Amount = trade.Amount, Direction = trade.Direction };
+            var entity = new AssetTradeViewModel { Id = trade.Asset.Id, Name = trade.Asset.Name, Amount = trade.Amount, Direction = trade.Direction };
             await mockService.Object.UpdateAsync(Guid.Parse(trade.Id), entity);
 
             // Assert

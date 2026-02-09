@@ -13,11 +13,13 @@ namespace MockMe.API.Controllers
     public class TradeController : ControllerBase
     {
         readonly ITradeService _tradeService;
+        readonly IAssetService _assetService;
         readonly ICountryService _countryService;
 
-        public TradeController(ITradeService tradeService, ICountryService countryService)
+        public TradeController(ITradeService tradeService, IAssetService assetService, ICountryService countryService)
         {
             _tradeService = tradeService;
+            _assetService = assetService;
             _countryService = countryService;
         }
 
@@ -45,7 +47,7 @@ namespace MockMe.API.Controllers
         [HttpGet("[action]")]
         public async Task<IActionResult> Generate()
         {
-            var item = await _tradeService.GenerateAsync();
+            var item = await _tradeService.GenerateSingleAsync();
             return CreatedAtAction("Generate", new { id = item.Id }, item);
         }
 
@@ -72,6 +74,13 @@ namespace MockMe.API.Controllers
 
             var item = await _tradeService.DeleteAsync(id);
             return new OkObjectResult(item);
+        }
+
+        [HttpGet("Assets")]
+        public async Task<IActionResult> Assets()
+        {
+            var items = await _assetService.GetAssetsAsync();
+            return new OkObjectResult(items);
         }
 
         [Authorize]

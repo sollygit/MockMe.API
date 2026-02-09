@@ -1,5 +1,4 @@
-﻿using Bogus;
-using MockMe.Common;
+﻿using MockMe.Common;
 using MockMe.Model;
 using System;
 using System.Collections.Generic;
@@ -14,32 +13,37 @@ namespace MockMe.Repository
         Task<AssetTrade> SaveAsync(AssetTrade entity);
         Task<AssetTrade> UpdateAsync(Guid id, AssetTrade entity);
         Task<AssetTrade> DeleteAsync(Guid id);
-        Task<AssetTrade> GenerateAsync();
+        Task<AssetTrade> GenerateSingleAsync();
     }
 
     public class TradeRepository : ITradeRepository
     {
-        static List<AssetTrade> Trades;
+        readonly IEnumerable<CurrencyPair> _currencyPairs;
+        readonly IEnumerable<Asset> _assets;
+        readonly Random _random = new Random();
+        readonly List<AssetTrade> _trades;
 
         public TradeRepository()
         {
-            Trades ??= GenerateTrades(10);
+            _currencyPairs = Enum.GetValues(typeof(CurrencyPair)).Cast<CurrencyPair>();
+            _assets = _currencyPairs.Select(pair => new Asset((int)pair, pair.Description()));
+            _trades ??= GenerateTrades(10);
         }
 
         public async Task<IEnumerable<AssetTrade>> GetAllAsync()
         {
-            return await Task.FromResult(Trades);
+            return await Task.FromResult(_trades);
         }
 
         public async Task<AssetTrade> SaveAsync(AssetTrade entity)
         {
-            Trades.Add(entity);
+            _trades.Add(entity);
             return await Task.FromResult(entity);
         }
 
         public async Task<AssetTrade> UpdateAsync(Guid id, AssetTrade entity)
         {
-            var item = Trades.Single(p => p.Id == id.ToString());
+            var item = _trades.Single(p => p.Id == id.ToString());
 
             item.Asset = new Asset { Id = entity.Asset.Id, Name = entity.Asset.Name };
             item.Direction = entity.Direction;
@@ -52,32 +56,31 @@ namespace MockMe.Repository
 
         public async Task<AssetTrade> DeleteAsync(Guid id)
         {
-            var item = Trades.Single(o => o.Id == id.ToString());
-            var entry = Trades.Remove(item);
+            var item = _trades.Single(o => o.Id == id.ToString());
+            var entry = _trades.Remove(item);
             return await Task.FromResult(item);
         }
 
-        public async Task<AssetTrade> GenerateAsync()
+        public async Task<AssetTrade> GenerateSingleAsync()
         {
-            var randomTrade = GenerateTrades(1).FirstOrDefault();
+            var asset = _assets.ElementAt(_random.Next(0, _assets.Count()));
+            var randomTrade = GenerateTrades(1, asset).FirstOrDefault();
             return await Task.FromResult(randomTrade);
         }
 
-        List<AssetTrade> GenerateTrades(int count)
+        List<AssetTrade> GenerateTrades(int count ,Asset asset = null)
         {
-            var currencyPairs = ((IEnumerable<CurrencyPair>)Enum.GetValues(typeof(CurrencyPair))).ToList();
-            var trades = new Faker<AssetTrade>()
-                .RuleFor(o => o.Id, f => Guid.NewGuid().ToString())
-                .RuleFor(o => o.Asset, f => {
-                    var pair = new Faker().Random.ListItem((IList<CurrencyPair>)currencyPairs);
-                    return new Asset((int)pair, pair.Description());
+            var assetCount = _assets.Count();
+            return Enumerable.Range(0, count)
+                .Select(i => new AssetTrade 
+                {
+                    Asset = asset ?? _assets.ElementAt(i % _assets.Count()), // Cycles on assets
+                    Amount = Math.Round(_random.Next(100, 100000) * 0.01m, 2),
+                    Expiration = _random.Next(1, 1000),
+                    Payout = _random.Next(1, 1000),
+                    Direction = _random.Next(0, 2)
                 })
-                .RuleFor(o => o.Amount, f => decimal.Parse(f.Random.Decimal(1000).ToString("0.00")))
-                .RuleFor(o => o.Expiration, f => f.Random.Number(1, 1000))
-                .RuleFor(o => o.Payout, f => f.Random.Number(1, 1000))
-                .RuleFor(o => o.Direction, f => f.Random.Number(0, 1))
-                .Generate(count);
-            return trades;
+                .ToList();
         }
     }
 }

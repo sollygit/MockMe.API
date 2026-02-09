@@ -18,7 +18,7 @@ namespace MockMe.API.Services
         Task<AssetTrade> SaveAsync(AssetTradeViewModel entity);
         Task<AssetTrade> UpdateAsync(Guid id, AssetTradeViewModel entity);
         Task<AssetTrade> DeleteAsync(Guid id);
-        Task<AssetTrade> GenerateAsync();
+        Task<AssetTrade> GenerateSingleAsync();
     }
 
     public interface ICountryService
@@ -28,18 +28,22 @@ namespace MockMe.API.Services
 
     public interface IAssetService
     {
-        Task<IEnumerable<AssetViewModel>> GetAssets();
+        Task<IEnumerable<Asset>> GetAssetsAsync();
     }
 
-    public class TradeService : ITradeService, ICountryService, IAssetService
+    public class TradeService : ITradeService, IAssetService, ICountryService
     {
         readonly IMemoryCache _cache;
         readonly ITradeRepository _tradeRepository;
+        readonly IEnumerable<CurrencyPair> _currencyPairs;
+        readonly IEnumerable<Asset> _assets;
 
         public TradeService(IMemoryCache cache, ITradeRepository tradeRepository)
         {
             _cache = cache;
             _tradeRepository = tradeRepository;
+            _currencyPairs = Enum.GetValues(typeof(CurrencyPair)).Cast<CurrencyPair>();
+            _assets = _currencyPairs.Select(pair => new Asset((int)pair, pair.Description()));
         }
 
         public async Task<IEnumerable<AssetTrade>> GetAllAsync()
@@ -70,10 +74,20 @@ namespace MockMe.API.Services
             return await _tradeRepository.DeleteAsync(id);
         }
 
-        public async Task<AssetTrade> GenerateAsync()
+        public async Task<AssetTrade> GenerateSingleAsync()
         {
-            var fakeTrade = await _tradeRepository.GenerateAsync();
+            var fakeTrade = await _tradeRepository.GenerateSingleAsync();
             return await _tradeRepository.SaveAsync(fakeTrade);
+        }
+
+        public async Task<IEnumerable<Asset>> GetAssetsAsync()
+        {
+            // Cached Assets
+            return await _cache.GetOrCreateAsync("Assets", async e =>
+            {
+                e.SetOptions(new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24) });
+                return await Task.FromResult(_assets);
+            });
         }
 
         public async Task<IEnumerable<Country>> GetCountriesAsync()
@@ -84,20 +98,6 @@ namespace MockMe.API.Services
                     AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(24)
                 });
                 return await Task.FromResult(Constants.COUNTRIES);
-            });
-        }
-
-        public async Task<IEnumerable<AssetViewModel>> GetAssets()
-        {
-            return await _cache.GetOrCreateAsync("Assets", async e =>
-            {
-                // Cached Assets
-                e.SetOptions(new MemoryCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) });
-
-                var currencyPairs = ((IEnumerable<CurrencyPair>)Enum.GetValues(typeof(CurrencyPair))).ToList();
-                var result = currencyPairs.Select(pair =>
-                    Mapper.Map<AssetViewModel>(new Asset((int)pair, pair.Description())));
-                return await Task.FromResult(result);
             });
         }
     }
