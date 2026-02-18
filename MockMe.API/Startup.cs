@@ -32,7 +32,7 @@ namespace MockMe.API
             {
                 options.AddPolicy("CorsPolicy", builder =>
                 {
-                    builder.WithOrigins(Configuration["CorsUrl"])
+                    builder.WithOrigins(Configuration.GetSection("CorsUrl").Get<string[]>())
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();
