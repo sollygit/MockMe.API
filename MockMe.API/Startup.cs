@@ -26,13 +26,15 @@ namespace MockMe.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var origins = Configuration.GetSection("CorsUrl").Get<string[]>();
+
             services.AddMemoryCache();
             services.AddControllers();
             services.AddCors(options =>
             {
                 options.AddPolicy("CorsPolicy", builder =>
                 {
-                    builder.WithOrigins(Configuration.GetSection("CorsUrl").Get<string[]>())
+                    builder.WithOrigins(origins)
                         .AllowAnyHeader()
                         .AllowAnyMethod()
                         .AllowCredentials();

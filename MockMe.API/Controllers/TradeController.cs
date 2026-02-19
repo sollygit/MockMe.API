@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using MockMe.API.Services;
 using MockMe.API.ViewModels;
 using System;
@@ -83,7 +82,6 @@ namespace MockMe.API.Controllers
             return new OkObjectResult(items);
         }
 
-        [Authorize]
         [HttpGet("Countries")]
         public async Task<IActionResult> Countries()
         {
