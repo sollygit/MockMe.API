@@ -5,15 +5,6 @@ namespace MockMe.Common
 {
     public class Constants
     {
-        public const string Admin = "Admin";
-        public const string BasicUser = "BasicUser";
-
-        public static readonly IDictionary<string, string> USERS = new Dictionary<string, string> 
-        {
-            { "admin", "password" },
-            { "test", "password" }
-        };
-
         public static readonly IList<Country> COUNTRIES = new List<Country>
         {
             new Country { CountryId = 1, CountryName = "Australia", CountryCode = "AU" },
