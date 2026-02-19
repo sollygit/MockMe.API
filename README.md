@@ -1,21 +1,7 @@
-# JWT Auth Demo (ASP.NET Core + Angular)
+# MockMe Swagger API
 
-This repository demos an Angular SPA and an ASP.NET Core web API application using JWT auth, and an integration testing project for a set of actions including login, logout, refresh token, impersonation, authentication, and authorization.
+This RESTful API mocks trades data for for MockMeApp front-end.
 
-https://github.com/dotnet-labs/JwtAuthDemo
-
-## Medium Articles
-
-1. [JWT Auth in ASP.NET Core](https://codeburst.io/jwt-auth-in-asp-net-core-148fb72bed03)
-
-2. [JWT Authentication in Angular](https://codeburst.io/jwt-authentication-in-angular-48cfa882832c)
+<img width="1520" height="729" alt="image" src="https://github.com/user-attachments/assets/28a17652-52d3-4198-9db8-9d2cf3773075" />
 
 
-## Solution Structure
-
-This repository includes two applications: an Angular SPA in the `angular` folder, and an ASP.NET Core web API app in the `webapi` folder. The SPA makes HTTP requests to the server side (the `webapi` app) using an API BaseURL `https://localhost:44389`. The API BaseURL is set in the `environment.ts` file and the `environment.prod.ts` file, which can be modified based on your situation.
-
-- `angular`
-  The SPA application demonstrates JWT authorization in the front-end.
-- `webapi`
-  The ASP.NET Core web API app is served by Kestrel on Docker. This app has implemented HTTPS support.
