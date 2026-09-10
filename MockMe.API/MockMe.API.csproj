@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<UserSecretsId>fbd09d6b-e9e9-48fe-877f-f200475bfc9b</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="7.0.1" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="AutoMapper" Version="16.2.0" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\MockMe.Repository\MockMe.Repository.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\MockMe.Repository\MockMe.Repository.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\ServiceDependencies\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties\ServiceDependencies\" />
+	</ItemGroup>
 
 </Project>

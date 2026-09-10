@@ -3,7 +3,7 @@ using System.Net;
 
 namespace MockMe.Model
 {
-    public class ServiceException : System.Exception
+    public class ServiceException : Exception
     {
         public readonly HttpStatusCode StatusCode;
 

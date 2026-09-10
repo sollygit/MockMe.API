@@ -37,11 +37,13 @@ namespace MockMe.API.Services
         readonly ITradeRepository _tradeRepository;
         readonly IEnumerable<CurrencyPair> _currencyPairs;
         readonly IEnumerable<Asset> _assets;
+        readonly IMapper _mapper;
 
-        public TradeService(IMemoryCache cache, ITradeRepository tradeRepository)
+        public TradeService(IMemoryCache cache, ITradeRepository tradeRepository, IMapper mapper)
         {
             _cache = cache;
             _tradeRepository = tradeRepository;
+            _mapper = mapper;
             _currencyPairs = Enum.GetValues(typeof(CurrencyPair)).Cast<CurrencyPair>();
             _assets = _currencyPairs.Select(pair => new Asset((int)pair, pair.Description()));
         }
@@ -61,12 +63,12 @@ namespace MockMe.API.Services
         {
             if (entity == null) throw new ServiceException("Entity cannot be null");
 
-            return await _tradeRepository.SaveAsync(Mapper.Map<AssetTrade>(entity));
+            return await _tradeRepository.SaveAsync(_mapper.Map<AssetTrade>(entity));
         }
 
         public async Task<AssetTrade> UpdateAsync(Guid id, AssetTradeViewModel entity)
         {
-            return await _tradeRepository.UpdateAsync(id, Mapper.Map<AssetTrade>(entity));
+            return await _tradeRepository.UpdateAsync(id, _mapper.Map<AssetTrade>(entity));
         }
 
         public async Task<AssetTrade> DeleteAsync(Guid id)

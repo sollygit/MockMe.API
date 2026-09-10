@@ -1,9 +1,11 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.OpenApi;
 using MockMe.API.Services;
 using MockMe.Repository;
 
@@ -34,7 +36,14 @@ namespace MockMe.API
                 });
             });
 
-            AutoMapperProfile.Initialize();
+            // Auto Mapper Configurations
+            services.AddAutoMapper(cfg => {
+                cfg.LicenseKey = Configuration["AutoMapperLicenseKey"];
+            }, typeof(AutoMapperProfile).Assembly);
+            var config = new MapperConfiguration(cfg => {
+                cfg.AddProfile<AutoMapperProfile>();
+            }, NullLoggerFactory.Instance);
+            IMapper mapper = config.CreateMapper();
 
             services.AddScoped<ITradeService, TradeService>();
             services.AddScoped<ICountryService, TradeService>();
@@ -67,10 +76,7 @@ namespace MockMe.API
 
             app.UseRouting();
             app.UseCors("CorsPolicy");
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

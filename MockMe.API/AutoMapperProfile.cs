@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using MockMe.Model;
 using MockMe.API.ViewModels;
+using MockMe.Model;
 
 namespace MockMe.API
 {
@@ -8,13 +8,11 @@ namespace MockMe.API
     {
         public static bool IsInitialized { get; set; }
 
-        public static void Initialize()
+        public AutoMapperProfile()
         {
             if (IsInitialized) return;
 
-            Mapper.Initialize(cfg =>
-            {
-                cfg.CreateMap<AssetTrade, AssetTradeViewModel>()
+            CreateMap<AssetTrade, AssetTradeViewModel>()
                 .ForMember(o => o.Id, map => map.MapFrom(o => o.Asset.Id))
                 .ForMember(o => o.Name, map => map.MapFrom(o => o.Asset.Name))
                 .ForMember(o => o.Amount, map => map.MapFrom(o => o.Amount))
@@ -22,7 +20,6 @@ namespace MockMe.API
                 .ForMember(o => o.Direction, map => map.MapFrom(o => o.Direction))
                 .ForMember(o => o.Expiration, map => map.MapFrom(o => o.Expiration))
                 .ReverseMap();
-            });
 
             IsInitialized = true;
         }

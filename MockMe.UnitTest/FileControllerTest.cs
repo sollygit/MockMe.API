@@ -107,12 +107,12 @@ namespace MockMe.UnitTest
         public async Task Should_Download_SingleFile()
         {
             var client = _factory.CreateClient();
-            var response = await client.GetAsync("api/file/contoso.pdf");
+            var response = await client.GetAsync("api/file/test.pdf");
 
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
             Assert.AreEqual("application/pdf", response.Content.Headers.ContentType?.ToString());
-            Assert.AreEqual("attachment; filename=contoso.pdf; filename*=UTF-8''contoso.pdf", response.Content.Headers.ContentDisposition?.ToString());
-            Assert.AreEqual(134106, response.Content.Headers.ContentLength);
+            Assert.AreEqual("attachment; filename=test.pdf; filename*=UTF-8''test.pdf", response.Content.Headers.ContentDisposition?.ToString());
+            Assert.AreEqual(4, response.Content.Headers.ContentLength);
         }
 
         [ClassCleanup]
